@@ -1,0 +1,22 @@
+Basic Things we need to keep in mind to write clean code :
+
+1. Give meaningful names to variables, functions, classes, and other entities in the code.
+2. Create functions that are small and do a single thing.
+3. Encapsulate related data and functions into small independent classes.
+4. Structure the code for better readability. Keep related code together and keep the lines smaller.
+5. Enhance readability with proper comments.
+6. Write readable, fast, independent, and repeatable tests.
+
+
+
+Few Tips which we will deep dive later : 
+
+1. Avoid code repetitions (DRY).
+2. Keep the code simple (KISS).
+3. Hide implementation details (Abstraction).
+4. Keep the code extensible (Extensibility).
+5. Keep the code modular with minimal overlap (Separation of Concerns). - Minimum Coupling 
+6. Each module should do only one thing (Curly's law).
+7. Avoid unnecessary functionalities (YAGNI) and preoptimization (the root of all evil). - Don't implement foreseeing features for the future . Only implement when it is required 
+8. Stay consistent and avoid surprises in the code (Principle of least astonishment).  - Your code should not suprise maintainers , it should be doing exactly what it seems to be from first glance 
+9. Make the code better than how you found it (Boy-Scout Rule).
