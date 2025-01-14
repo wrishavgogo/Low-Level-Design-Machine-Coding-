@@ -1,0 +1,71 @@
+
+
+
+1. Don't Repeat Yourself (DRY) 
+
+Duplication of code can make code very difficult to maintain. Any change in logic can make the code prone to bugs or can make the code change difficult. 
+This can be fixed by doing code reuse (DRY Principle).
+
+The DRY principle is stated as "Every piece of knowledge must have a single, unambiguous, authoritative representation within a system".
+
+The way to achieve DRY is by creating functions and classes to make sure that any logic should be written in only one place.
+
+
+2. Curly's Law - Do One Thing 
+
+Curly's Law: A entity (class, function, variable) should mean one thing, and one thing only. It should not mean one thing in one circumstance and carry a 
+different value from a different domain some other time. 
+It should not mean two things at once. It should mean One Thing and should mean it all of the time.
+
+
+3. Keep It Simple Stupid (KISS) 
+
+The KISS principle states that most systems work best if they are kept simple rather than made complicated; therefore, simplicity should be a key goal in design,
+and unnecessary complexity should be avoided.
+
+Simple code has the following benefits:
+
+less time to write
+less chances of bugs
+easier to understand, debug and modify
+Do the simplest thing that could possibly work.
+
+Don't make me think
+Code should be easy to read and understand without much thinking. If it isn't then there is a prospect of simplification.
+
+
+4. You Aren't Gonna Need It (YAGNI)  :- V.V.Imp 
+
+"Always implement things when you actually need them, never when you just foresee that you need them."
+
+Even if you're totally, totally, totally sure that you'll need a feature, later on, don't implement it now. Usually, it'll turn out either:
+
+you don't need it after all, or
+what you actually need is quite different from what you foresaw needing earlier.
+This doesn't mean you should avoid building flexibility into your code. It means you shouldn't overengineer something based on what you think you might need later on.
+
+There are two main reasons to practice YAGNI:
+
+You save time because you avoid writing code that you turn out not to need.
+Your code is better because you avoid polluting it with 'guesses' that turn out to be more or less wrong but stick around anyway.
+
+
+5. Premature Optimization is the Root of All Evil :- V.V.Imp
+
+Programmers waste enormous amounts of time thinking about or worrying about, the speed of noncritical parts of their programs, and these attempts at efficiency actually 
+have a strong negative impact when debugging and maintenance are considered. Dont Optimize where its not required 
+
+
+6. Code for the Maintainer
+
+Always code as if the person who ends up maintaining your code is a violent psychopath who knows where you live.
+
+7. Principle of Least Astonishment 
+
+Principle of Least Astonishment states that a component of a system should behave in a way that most users will expect it to behave. 
+The behavior should not astonish or surprise users.
+
+Code should do what the name and comments suggest. Conventions should be followed. Surprising side effects should be avoided as much as possible.
+
+
+
