@@ -1,0 +1,88 @@
+I was attempting this question https://workat.tech/machine-coding/practice/snake-and-ladder-problem-zgtac9lxwntg 
+
+Designing a snake ladder game and completing all the requirements and all . 
+
+
+First attempt i took in the morning -> i was not able to sit for complete 1.5 hrs 
+2nd attempt i took i was able to sit for 1.5 hrs but still could not end it . But yeah some improvement was there 
+
+
+Later at night I discussed with Mayank . He gave me good insights on what are the conventions i will note it down here .
+
+
+Learnings : 
+
+1. In model classes always have an identifier as id . even username is distinct or something like that . Even if you have a separate identifier . Have id as a unique field 
+public class Ladder {
+    // have id
+    // every model must have an id for distinction
+    private int start;
+    private int end;
+}
+
+2. For each Model class i created a separate Manager class , to handle its management . Like snakeManager , PlayerManager , LadderManager etc 
+for that in some methods 
+
+Like --> public void addSnake(int id , Snake snake) {
+        cellIdToSnakeMap.put(id , snake);
+    }
+
+In addSnake i was passing a snake object . 
+
+Here he told me , creation of snake Object should be responsibility of SnakeManager and Snake object should not be passed in the arguments . User just passes head / tail 
+of the snake and you create a snake and add it to the map 
+
+public void addSnake(int id , int head , int tail) { ----> this is the correct separation of responsibility 
+        Snake snake = new Snake(id , head , tail);
+        cellIdToSnakeMap.put(id , snake);
+    }
+
+
+3. In the constructor of PLayerManager i was passing :- List<Player> playerList
+
+public PlayerManager(List<Player> playerList) {
+    userNameToPlayerMap = playerList.stream().collect(Collectors.toMap(Player:: getUserName, Function.identity(), (A, B) -> A));
+} 
+
+he told me already you have exposed an addSnake() method , why does your contructor have the responsibility of doing it . It should just initialize the map right ?
+
+4. I was wondering where should i put the logic of finding the winner of the game , I was thinking of creating a PlayerManagerHelper 
+For which he said 
+/**
+     * In machine coding , you firstly dont need to write helpers , i can just mention the logic in PlayerManager itself
+     * **/
+
+5. Create SpringBootProjects and do the work from there , writing a single controller is fine where all the calls come from 
+/***
+     * have gameManager in controller and trigger Game from controller .playGame()
+     * have logic inside gameManager
+     * */
+
+6.  He said one thing i missed is creating DAOs and repository , in machine coding you dont actually have to put the items in the db , just make the call and write 
+something in the comments 
+
+/***
+     * One thing that you missed is
+     * creating DAO @Repository
+     * In playerManger
+     * ****/
+
+
+public void addLadder(int id , Ladder ladder) {
+        cellIdToLadderMap.put(id , ladder);
+        /**
+         * see the map is initialized only in the start of the game
+         * so in addLadder just pass the ladders in the DAO class ,
+         * and during creation of the game populate the map using DAO.getLadders()
+         * **/
+    }
+
+this part i need to check a bit more . 
+
+
+So yeah we will try it again . 
+
+We will watch annotations in our work repo and learn more . 
+
+
+
