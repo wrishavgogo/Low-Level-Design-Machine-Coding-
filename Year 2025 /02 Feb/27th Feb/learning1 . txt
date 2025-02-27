@@ -1,0 +1,117 @@
+While i was trying to solve a problem in machine coding. I learnt a lot of things in machine coding . I think the dots are connected in my brain nicely and i will not forget 
+springboot basics , these are the ones 
+
+
+
+Things i learnt with my first attempt at machine coding round 
+
+I am doing everything from scratch so that it gets engraved in my blood 
+
+
+Question Link : https://medium.com/@techwithkp/digital-wallet-design-google-pay-paytm-machine-coding-round-lld-34205ac3ae41 
+
+Digital Wallet Payment Link 
+
+
+Step 1  : 
+You create a springBoot project from intellij 
+When you click on create new project , click on spring boot , 
+Add dependencies like spring Web and Spring web reactive if required 
+
+
+Step 2 : 
+Create a separate package called controller , where you will be writing the end points 
+
+Things i learnt during this step 
+
+1. At the top of the class i provided a @RestController annotation and gave a path to compile the path value 
+@RestController(value="/digitalWallet") --> value is the path to identify this at class level 
+
+2.  for Each method i defined i defined a ResponseEntity as the return type , 
+Now the ResponseEntity which we return in the return statement needs two parameters 
+
+return ResponseEntity("type your message in string this is what the response Body contains " , statusCode -> you can use HttpStatusCode.OK (which is an Enum) )
+
+3. At the top of each method name we can define an endpoint itself as well , we can have 
+@GetMapping(path = "/whatever name you want to give") --> for get request
+@PostMapping(path = "/same as above") --> for post request 
+
+4. In postman i learnt to add the header 
+Content-Type : application/json ---> this helps you make the postman client understand what request/response will be in the format of 
+
+
+
+Learning from the above , 
+
+1.  So when i hit the request it showed me nothing is found . 
+
+Checked with Chatgpt , 
+
+I was making a mistake , i was doing 
+@RestController(value="/digitalWallet") ---> but this does not expose or define path for request to come, this only is giving name to the bean actually 
+
+Correct way is 
+@RestController --> identifying this as a controller and making it accept and return responses 
+@RequestMapping(path = "/digitalWallet") --> this is the place where we are exposing the endpoint at a class level 
+
+after i made this change it worked
+
+
+2. So thing is in postman when you are typing a get request , you can actually in the params tab see what parameters are you actually passing 
+
+http://localhost:8080/digitalWallet/createWallet? --> after this question mark whatever you are passing is going through the params and is getting displayed in the postman tab 
+
+userName=wrishav&accountNumber=hdfc1234&amount=2.3 
+
+
+
+Step 3 : 
+
+One more thing i learnt , in the return statement . 
+
+if i create an object like below 
+class DigitalWalletResponseDTO {
+    @JsonProperty("userName")
+    String userName;
+    @JsonProperty("accountNumber")
+    String accountNumber;
+    @JsonProperty("amount")
+    BigDecimal amount;
+    @JsonProperty("creationStatus")
+    String creationStatus;
+}
+
+return new ResponseEntity(digitalWalletResponseDTO, HttpStatus.OK);
+
+then i can get response in that form in the object form 
+
+
+Step 4. 
+
+The step 3 raised curiousity in me , i was wondering , wwhatever i sent in response , why can't i send it in the request 
+like create a DTO request 
+
+class DigitalWalletRequestDTO {
+    @JsonProperty("userName")
+    String userName;
+    @JsonProperty("accountNumber")
+    String accountNumber;
+    @JsonProperty("amount")
+    BigDecimal amount;
+}
+
+and in postman make it as a post request and in the curl body send this class 
+curl --location 'http://localhost:8080/digitalWallet/createWallet' \
+--header 'Content-Type: application/json' \
+--data '{
+    "userName": "wrishav",
+    "accountNumber": "hdfc1234",
+    "amount": 2.3
+}'
+
+but while debugging i saw that the class DigitalWalletRequestDTO did not get populated , 
+so now am checking whats the issue 
+
+Learning : I learnt that @RequestBody annotation is important to deserialize the json body into the DigitalWalletRequestDTO using Jackson binding . 
+
+
