@@ -1,0 +1,217 @@
+Question Link :- https://workat.tech/machine-coding/practice/design-distributed-queue-cuudq0sk0v14 
+
+
+
+Am gonna discuss how i did it and how i learnt from Chatgpt and what enhancements i can make 
+
+
+Let me note down the model classes first :- 
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class Consumer {
+    private String consumerId;
+    private String consumerName;
+    private Map<String, Integer> topicIdToOffsetMap; --> this contains for each topicId what is the offset till which it has read the message 
+}
+
+
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class Message {  ---> I think Message is self Explanatory
+    private String messageId;
+    private String desc;
+    private String producerId;
+    private String topicId;
+    private String createdAt;
+}
+
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Producer {
+    private String producerId;
+    private String producerName;
+    private List<String> topicIdList; --> does not contain details of the whole topic , just topic is fine 
+}
+
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class Topic {
+
+    private String topicId;
+    private String topicName;
+    private List<Message> messageQueue;  --> In this i kept the messages as List<Messages> because we would need to reset offset to read older messages 
+                                        ---> also for multi threading , using a queue wont be possible as we would need to wait till past messages are polled 
+}
+
+
+
+Basic requirements 
+
+1. addNewTopic
+2. addNewProducer
+3. addNewConsumer
+4. makeConsumerSubscribeToTopics
+5. makeProducerSubscribeToTopics 
+
+
+
+Main interesting part where i learning happened 
+
+1st Learning : 
+
+I while creating the topic i was creating 
+Topic topic  = new Topic(topicId , topicName , Collections.synchronised(new ArrayList<>())); 
+what did this is create a thread safe arrayList 
+
+but the problem with this is , it is not performant 
+
+So chatGpt suggested me to create it as new copyOnWriteArrayList<>(); 
+this is also a thread safe list 
+but it does not block reads if a write is going on 
+but it will block write if a write is going on or a read is going on 
+its basically an implementation of read/write lock 
+
+if an object has write lock , it can get read lock 
+but write lock cannot acquire the object if any kind of lock is applied to it 
+
+So that way it became performant 
+
+
+2nd Learning : 
+
+To use ConcurrentHashMap for accessing topicIdToOffsetMap of a Consumer , that way multiple threads can update the offsets of different topics as requried
+whereever required ConcurrentHashMaps could be used 
+Like getting Topic FROM topiciDToTopicMap
+
+that way producers can produce to multiple topics without having to wait for the lock to be free from topicIdToTopicMap to write to the topic 
+
+Also was discussing this with Mayank , where i got to know that ConcurrentHashMap does not use Key Level locking , rather it picks a segment / bucket of the hashmap 
+and acquires lock on it . Like multiple locks are applied on multiple segments and not individually at key level 
+
+I need to study more about this concurrentHashMap actually 
+
+
+
+3rd Learning 
+
+This is not much of Learning but still i took the idea from chatGpt and applied and implemented it myself , 
+Basically i created two threads to produce messages from producer1 and producer2 to keep producing messages 
+
+Thread t1 = new Thread( () -> { 
+
+    while(true) {
+        try {
+            Thread.sleep(5);
+        } catch (Exception e) {
+        }
+        // producer1 message to its topics
+    }
+ });
+
+Thread t2 = new Thread( () -> { 
+
+    while(true) {
+        try {
+            Thread.sleep(4);
+        } catch (Exception e) {
+        }
+        // producer2 message to its topics
+    }
+ });
+
+t1.start();
+t2.start();
+
+while(true) { 
+  // call polling function for consumers ---> now this is important 
+  ---> as its happening in the main thread  , 
+  ----> so main thread will not end and t1 and t2 can continue on producing messages 
+}
+
+
+4th Learning  -> This is the best learning of all 
+Since Kafka's concept is like Consumers poll messages from topics and topic does not push messages to consumers .
+So we will try to do something similar as well . 
+
+
+So in our main management class we will have a FixedThreadPoolExecutor(5) 
+
+This is the runnable Task that i wrote , which we take input a batch of consumerList and make them consume messages 
+
+
+class MessagePollingTask implements Runnable {
+
+    // this is a runnable which we will pass to our threadPoolExecutor
+    // it will take a batch of consumerList
+    // and make them consume Messages 1 upto a given number of messages
+    // then we should be fine 
+    private List<Consumer> consumerList;
+    private Map<String , Topic> topicIdToTopicMap;
+
+    public MessagePollingTask(List<Consumer> consumerList,Map<String , Topic> topicIdToTopicMap ) {
+        this.consumerList = consumerList;
+        this.topicIdToTopicMap = topicIdToTopicMap;
+    }
+
+    public void run() {
+
+        for(Consumer consumer : consumerList) {
+
+            for(Map.Entry<String , Integer> entry : consumer.getTopicIdToOffsetMap().entrySet()) {
+                
+                String topicId = entry.getKey();
+                int currentOffset = entry.getValue();
+                int readMessages = 5; // let's say we read only 5 messages
+                Topic topic = topicIdToTopicMap.get(topicId);
+                
+                if(topic.getMessageQueue().size() > currentOffset + readMessages) {
+                    
+                    // it means new messages are in the topic 
+                    // read the messages
+                }
+                
+                // set the new offset for the topic
+                consumer.getTopicIdToOffsetMap().put(topicId , currentOffset + readMessages);
+            }
+        }
+    }
+}
+
+
+Now the part where the driver is using the executor to send batches of request 
+
+private ExecutorService executorService = Executors.newScheduledThreadPool(5);
+
+public void pollMessages(int batchSize) {
+
+        List<Consumer> consumerList = consumerIdToConsumerMap.values().stream().collect(Collectors.toList());
+
+
+        for(int i = 0 ; i < consumerList.size() ; i += batchSize ) {
+
+            int end = Math.min(i + batchSize, consumerList.size());
+            List<Consumer> currentConsumersBatch = consumerList.subList(i , end);
+
+            executorService.submit(new MessagePollingTask(currentConsumersBatch , topicIdToTopicMap));
+        }
+}
+
+
+I feel like this is a very good hands on experience for me to deal with concurrency requests . 
+
+
+
+
+
+
