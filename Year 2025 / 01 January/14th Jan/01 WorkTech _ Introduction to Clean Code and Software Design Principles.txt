@@ -12,7 +12,7 @@ Basic Things we need to keep in mind to write clean code :
 Few Tips which we will deep dive later : 
 
 1. Avoid code repetitions (DRY).
-2. Keep the code simple (KISS).
+2. Keep the code simple stupid (KISS).
 3. Hide implementation details (Abstraction).
 4. Keep the code extensible (Extensibility).
 5. Keep the code modular with minimal overlap (Separation of Concerns). - Minimum Coupling 
