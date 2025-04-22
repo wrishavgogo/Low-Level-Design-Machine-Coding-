@@ -9,6 +9,8 @@ If within same Year , then Month Should be taken into account .
 If Same Month then date comes into play 
 
 
+whichever pictures am uploading , its very important for you to go through them 
+
 
 
 this repo will contain
