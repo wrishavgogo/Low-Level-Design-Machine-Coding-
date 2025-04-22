@@ -1,0 +1,27 @@
+is there a problem with Synchronization on a non-final field 'lock'  ? 
+
+
+ChatGPT said:
+Yes — synchronizing on a non-final field like lock can be risky, though it’s not immediately wrong. Here's a clean explanation of the why and what to do about it:
+
+🔍 What's the issue with synchronizing on a non-final field?
+java
+Copy
+Edit
+private Object lock = new Object(); // ❌ mutable, not final
+When you synchronize like this:
+
+java
+Copy
+Edit
+synchronized (lock) {
+    // critical section
+}
+It works fine as long as lock always points to the same object. But if any code accidentally or intentionally changes the lock reference, then:
+
+Other threads might still be synchronizing on the old object.
+
+New code might be synchronizing on the new object.
+
+This breaks the guarantee of mutual exclusion — which can lead to race conditions, missed signals, or deadlocks.
+
