@@ -10,7 +10,7 @@ If Same Month then date comes into play
 
 
 whichever pictures am uploading , its very important for you to go through them 
-
+and also the comments , comments are the most important of them all
 
 
 this repo will contain
