@@ -1,0 +1,73 @@
+Exception in thread "main" Exception in thread "Thread-3" java.lang.IllegalMonitorStateException: current thread is not owner
+	at java.base/java.lang.Object.wait(Native Method)
+	at java.base/java.lang.Object.wait(Object.java:338)
+	at Date_2025_04_22.ThreadProcessCommunicationExample.consumeMessage(ThreadProcessCommunicationExample.java:64)
+	at Date_2025_04_22.ThreadProcessCommunicationExample.lambda$main$1(ThreadProcessCommunicationExample.java:99)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+Exception in thread "Thread-2" java.lang.IllegalThreadStateException
+	at java.base/java.lang.Thread.start(Thread.java:800)
+	at Date_2025_04_22.ThreadProcessCommunicationExample.main(ThreadProcessCommunicationExample.java:124)
+java.lang.IllegalMonitorStateException: current thread is not owner
+	at java.base/java.lang.Object.wait(Native Method)
+	at java.base/java.lang.Object.wait(Object.java:338)
+	at Date_2025_04_22.ThreadProcessCommunicationExample.consumeMessage(ThreadProcessCommunicationExample.java:64)
+	at Date_2025_04_22.ThreadProcessCommunicationExample.lambda$main$1(ThreadProcessCommunicationExample.java:99)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+message : sampleMessage1751664117 produced by thread : Thread-0 and queue size is = 2
+message : sampleMessage-447615854 produced by thread : Thread-1 and queue size is = 1
+
+Process finished with exit code 1
+
+
+
+Error stack strace 
+
+lets dive down step by step what mistakes i did here 
+
+error type1 :-  java.lang.IllegalMonitorStateException
+
+What it means:
+This exception occurs when a thread tries to call wait(), notify(), or notifyAll() without owning the object's monitor lock (i.e., not inside a synchronized block on the same object).
+
+so in my code i was doing -> 
+while(queue.size() == 0) {
+    lock.wait(); // ❌ Not inside synchronized(lock)
+}
+
+so i did not tell which thread is taking ownership of the process
+
+correction :- 
+
+synchronized (lock) {  ---> using synchronized lock , and then called lock.wait() makes the compiler understand whichever thread is inside c section , that thread is calling the lock.wait() condition , and thats all , so before calling wait and notify you need make sure ownership of thread is given 
+    while(queue.isEmpty()) {
+        lock.wait(); // ✅ Now this is legal
+    }
+}
+
+
+
+
+next type of error  : IllegalThreadStateException
+
+What it means:
+This exception occurs when you try to start a thread that has already been started or already terminated.
+
+Your mistake is here:
+java
+Copy
+Edit
+// This is wrong ❌
+for(int i = 0 ; i < 2 ; i++ ) {
+    producerThreads[i].start(); // you're starting the SAME thread again in a loop
+}
+
+
+what the error is , am trying to start a thread which is already been started , so if you look at the thread lifecycle we studied , 
+its in the ready queue and or runnable queue or maybe has got the cpu and we are calling a start() on it again which is leading to 
+IllegalThreadStateException 
+
+
+
+
+
+
