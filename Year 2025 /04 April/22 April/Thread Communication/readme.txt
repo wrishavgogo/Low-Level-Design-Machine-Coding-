@@ -19,3 +19,12 @@ notifyAll() --> this notifies all the threads who are waiting on this resource ,
 
 
 We will try to implement a producer consumer problem to solidify our understanding 
+
+
+Main learning from this ,
+
+
+cases why wait() and notifyAll() is required 
+how IllegalmonitorState exceptions -> use synchronized  and illegalThreadState exception ---> dont start already started thread 
+we saw the scenario , why process was not ending , the scenario when its happening 
+how to handle interrupt() , handle it in the thread itself , thread does not throw exception to it caller 
