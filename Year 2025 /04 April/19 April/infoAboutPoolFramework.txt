@@ -23,7 +23,7 @@ Lead to massive CPU thrashing
 Cause even more timeouts, not fewer , context switching increases a lot 
 
 So the problem we are seeing in Frequency Algo , if we try to use cachedThreadPool our performance will degrade not improve , 
-so better we use cached thread pool itself , 
+so better we use custom thread pool itself , 
 
 
 
