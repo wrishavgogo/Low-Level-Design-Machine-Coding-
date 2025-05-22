@@ -1,0 +1,114 @@
+Aryan Mittal's solution 
+
+
+import java.util.concurrent.locks.*; ---> ReentrantLocks from here 
+import java.util.concurrent.*;  --> semaphore directly from here
+
+
+
+List<Integer> creditList;
+
+
+f(0 , creditList );
+
+
+
+int f(int startIndex , List<Integer> creditList ) {
+	
+	int n = creditList.size();
+	if(startIndex >= n ) {
+		return 0;
+	}
+
+	while(creditList.get(startIndex) == 0 ) {
+		return f(startIndex + 1 , creditList);
+	}
+
+
+	int ans = Integer.MAX_VALUE;
+
+	for(int i = startIndex + 1 ; i < n ; i ++ ) {
+
+
+		// problem in my code , my code will not skip the place where creditList.get(startIndex is 0 ) so better add a condition 
+		// on top
+		if(creditList.get(startIndex) * creditList.get(i) < 0 ) {
+
+			creditList.set(i , creditList.get(i) + creditList.get(startIndex));
+			ans = Math.min(ans , 1  + f(startIndex + 1 , creditList));
+			creditList.set(i , creditList.set(i , creditList.get(i) - creditList.get(startIndex)) );
+
+		}
+		
+
+	}
+
+	return ans;
+}
+
+
+
+Max number of subgroups 
+
+
+startMask = (1 << n ) - 1;
+int[] dp = new int[startMask]; ---> assume its all -1 to begin with 
+findMaxGroups(startMask , creditList );
+
+
+boolean checkIfGroupSumZero(int mask , List<Integer> creditList ) {
+	
+	int n = creditList.size();
+	int sum = 0;
+	for(int i = 0 ; i < n ; i ++ ) {
+
+		if( (mask >> i ) & 1 ) == 1 ) {
+			sum += creditList.get(i);
+		}
+	}
+	return sum == 0 ;
+}
+
+
+int findMaxGroups(int mask , List<Integer> creditList ) {
+	
+
+	if(mask == 0 ) {
+		return 0;
+	}
+
+	if(dp[mask] != -1 ) {
+		return dp[mask];
+	}
+
+	int n = creditList.size();
+	int maxGroups = 0;
+
+
+	// this whole for loop's complexity is O(n*2^n)
+	// and we are doing this for each state , which can be 2^n as well 
+
+	for(int submask = 1 ; submask < (1 << n ) ; submask ++ ) {
+
+		if( (submask & mask ) == submask  && checkIfGroupSumZero(submask , creditList)) {
+			maxGroups = Math.max(maxGroups , 1 + findMaxGroups(submask ^ mask , creditList));
+		}
+	}	
+
+	dp[mask] = maxGroups;
+	return dp[mask];
+}
+
+
+am wondring the complexity should be O(n*2^n*2^n)
+// this whole for loop's complexity is O(n*2^n)
+	// and we are doing this for each state , which can be 2^n as well 
+
+
+please correct me if am missing something 
+
+
+
+
+
+
